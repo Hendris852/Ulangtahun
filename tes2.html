@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Selamat Ulang Tahun!</title>
+  
+  <!-- Import Google Fonts: Fredoka -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+      font-family: 'Fredoka', 'Poppins', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.88);
+      padding: 30px 20px;
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(255, 71, 87, 0.2);
+      backdrop-filter: blur(8px);
+      max-width: 90%;
+      width: 400px;
+      z-index: 10;
+      transition: all 0.5s ease;
+    }
+
+    h1 {
+      color: #ff4757;
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    p.subtitle {
+      color: #666;
+      font-size: 0.95rem;
+      font-weight: 400;
+      margin-bottom: 20px;
+    }
+
+    /* Kotak Hitung Mundur / Timer */
+    .countdown-box {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .time-item {
+      background: #ff4757;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 10px;
+      min-width: 55px;
+      box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3);
+    }
+
+    .time-item span {
+      display: block;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .time-item small {
+      font-size: 0.75rem;
+      opacity: 0.9;
+    }
+
+    /* Kado Animation */
+    .gift-box {
+      width: 100px;
+      height: 100px;
+      background-color: #ff4757;
+      margin: 0 auto 10px;
+      position: relative;
+      cursor: pointer;
+      border-radius: 12px;
+      box-shadow: 0 8px 15px rgba(255, 71, 87, 0.4);
+      animation: bounce 1.5s infinite;
+      transition: transform 0.3s ease;
+      border: none;
+    }
+
+    .gift-box:hover {
+      transform: scale(1.08);
+    }
+
+    /* Jika kado dikunci (belum waktunya) */
+    .gift-box.locked {
+      background-color: #a4b0be;
+      box-shadow: 0 8px 15px rgba(164, 176, 190, 0.4);
+      animation: none;
+      cursor: not-allowed;
+    }
+    .gift-box.locked:hover {
+      transform: none;
+    }
+
+    /* Pita Horizontal */
+    .gift-box::before {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 100%;
+      background-color: #ffa502;
+      left: 40px;
+      top: 0;
+    }
+    .gift-box.locked::before {
+      background-color: #747d8c;
+    }
+
+    /* Pita Vertikal */
+    .gift-box::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 20px;
+      background-color: #ffa502;
+      top: 40px;
+      left: 0;
+    }
+    .gift-box.locked::after {
+      background-color: #747d8c;
+    }
+
+    /* Pita Atas (Pita Kembang) */
+    .bow {
+      position: absolute;
+      top: -15px;
+      left: 32px;
+      width: 36px;
+      height: 20px;
+      background-color: #ffa502;
+      border-radius: 50% 50% 0 0;
+      z-index: 2;
+    }
+    .gift-box.locked .bow {
+      background-color: #747d8c;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    /* Area Pesan Slide 1 & Slide 2 */
+    .card-message {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .card-message.active {
+      display: block;
+      opacity: 1;
+      animation: fadeIn 0.6s forwards;
+    }
+
+    /* Styling Foto */
+    .profile-photo {
+      width: 130px;
+      height: 130px;
+      object-fit: cover;
+      object-position: 70% center;
+      border-radius: 50%;
+      border: 4px solid #ff4757;
+      box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
+      margin-bottom: 15px;
+    }
+
+    .card-message h2 {
+      color: #ff4757;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    .card-message p {
+      color: #444;
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+
+    .heart {
+      color: #ff4757;
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+    }
+
+    /* Tombol Navigasi Slide */
+    .btn-next, .btn-back {
+      font-family: 'Fredoka', sans-serif;
+      background-color: #ff4757;
+      color: white;
+      border: none;
+      padding: 10px 22px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      border-radius: 25px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3);
+      transition: all 0.3s ease;
+      margin-top: 5px;
+    }
+
+    .btn-next:hover, .btn-back:hover {
+      background-color: #ff2e44;
+      transform: translateY(-2px);
+    }
+
+    .btn-back {
+      background-color: #747d8c;
+      box-shadow: 0 4px 10px rgba(116, 125, 140, 0.3);
+      margin-right: 10px;
+    }
+
+    .btn-back:hover {
+      background-color: #57606f;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Efek Bintang/Kelopak Terbang */
+    .sparkle {
+      position: absolute;
+      color: #ff6b81;
+      font-size: 1.2rem;
+      animation: fall 4s linear infinite;
+      top: -10%;
+      z-index: 1;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(105vh) rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Elemen Audio Tersembunyi -->
+  <audio id="birthday-music" loop>
+    <source src="https://github.com/Hendris852/Ulangtahun/raw/main/nastelbom-happy-birthday-471481.mp3" type="audio/mpeg">
+    Browser kamu tidak mendukung pemutar audio.
+  </audio>
+
+  <div class="container">
+    <!-- Tampilan Sebelum Kado Di-klik (Dilengkapi Timer Server) -->
+    <div id="gift-section">
+      <h1 id="gift-title">Spesial Buat Kamu 🎁</h1>
+      <p class="subtitle" id="gift-subtitle">Kado ini akan terbuka pada 12 Oktober 00:00 WIB</p>
+      
+      <!-- Tampilan Hitung Mundur -->
+      <div class="countdown-box" id="countdown">
+        <div class="time-item"><span id="days">00</span><small>Hari</small></div>
+        <div class="time-item"><span id="hours">00</span><small>Jam</small></div>
+        <div class="time-item"><span id="minutes">00</span><small>Menit</small></div>
+        <div class="time-item"><span id="seconds">00</span><small>Detik</small></div>
+      </div>
+      
+      <button id="gift-btn" class="gift-box locked" onclick="openGift()">
+        <div class="bow"></div>
+      </button>
+    </div>
+
+    <!-- Slide 1: Ucapan Ulang Tahun -->
+    <div id="message-section" class="card-message">
+      <img src="https://lh3.googleusercontent.com/d/1HNi0SEXm80BIwf6g-Jv0f6rdJxRl6J5A" alt="Foto Pacar" class="profile-photo">
+
+      <h2>🎉 Selamat Ulang Tahun Bocil Cantik! 🥳</h2>
+      <p>
+        Semoga makin pintar, makin dewasa, makin sehat, dan selalu bahagia ya! 
+        Moga-moga semua cita-cita dan impian kamu bisa terwujud satu per satu. ✨
+      </p>
+      <p>
+        Tetap jadi orang yang ceria dan selalu bawa kebahagiaan buat orang-orang di sekitar kamu! 💖
+      </p>
+      <div class="heart">❤️✨🌸</div>
+
+      <button class="btn-next" onclick="goToSlide2()">Ada pesan lagi nih 👉</button>
+    </div>
+
+    <!-- Slide 2: Ungkapan Rasa Sayang Spesial -->
+    <div id="love-section" class="card-message">
+      <h2>💌 Satu Hal Lagi...</h2>
+      <p>
+        Makasih banyak ya udah hadir di hidup aku dan selalu bawa banyak kebahagiaan. Maaf kalau aku masih sering bikin kesel atau banyak kurangnya.
+      </p>
+      <p>
+        Aku bersyukur banget bisa ada di dekat kamu sampai detik ini. Kalau kamu pernah merasa gak layak dicintai sebesar ini, izinkan aku buat terus ngebuktiin kalau kamu adalah orang yang sangat pantas untuk dicintai sepenuhnya. Aku tulus sama kamu, bukan sekadar penasaran. I love you so much! 💖✨
+      </p>
+      <div class="heart">💖💍🌸</div>
+
+      <button class="btn-back" onclick="goToSlide1()">⏪ Kembali</button>
+    </div>
+  </div>
+
+  <script>
+    // Tanggal target: 12 Oktober tahun berjalan, jam 00:00:00 WIB (UTC+7)
+    // Bulan 9 = Oktober
+    const targetDate = new Date(Date.UTC(new Date().getFullYear(), 9, 11, 17, 0, 0)).getTime(); 
+    // Jam 17:00 UTC tanggal 11 sama dengan jam 00:00 WIB tanggal 12
+
+    let timeOffset = 0; // Selisih waktu antara HP dan server internet
+
+    // Ambil waktu asli dari server internet (World Time API)
+    fetch('https://worldtimeapi.org/api/timezone/Asia/Jakarta')
+      .then(response => response.json())
+      .then(data => {
+        const serverTime = new Date(data.datetime).getTime();
+        const localTime = new Date().getTime();
+        timeOffset = serverTime - localTime; // Hitung selisihnya
+      })
+      .catch(error => {
+        console.log("Gagal mengambil waktu internet, menggunakan waktu lokal:", error);
+      });
+
+    // Fungsi Hitung Mundur menggunakan waktu terkalibrasi server
+    const timer = setInterval(function() {
+      const now = new Date().getTime() + timeOffset;
+      const distance = targetDate - now;
+
+      if (distance < 0) {
+        // Waktu sudah tiba
+        clearInterval(timer);
+        document.getElementById("countdown").style.display = "none";
+        document.getElementById("gift-title").innerText = "Hadiah Buat Kamu! 🎁";
+        document.getElementById("gift-subtitle").innerText = "Klik kadonya buat buka kejutan yaa~";
+        
+        const giftBtn = document.getElementById("gift-btn");
+        giftBtn.classList.remove("locked"); // Buka kunci kado
+      } else {
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        document.getElementById("days").innerText = String(days).padStart(2, '0');
+        document.getElementById("hours").innerText = String(hours).padStart(2, '0');
+        document.getElementById("minutes").innerText = String(minutes).padStart(2, '0');
+        document.getElementById("seconds").innerText = String(seconds).padStart(2, '0');
+      }
+    }, 1000);
+
+    function openGift() {
+      const giftBtn = document.getElementById("gift-btn");
+      
+      // Jika kado masih dikunci
+      if (giftBtn.classList.contains("locked")) {
+        alert("Eits, kadonya masih dikunci! Tunggu sampai tanggal 12 yaa~ 😋🤭");
+        return;
+      }
+
+      // Putar musik saat kado dibuka
+      const music = document.getElementById('birthday-music');
+      music.play().catch(error => {
+        console.log("Autoplay dicegah oleh browser:", error);
+      });
+
+      document.getElementById('gift-section').style.display = 'none';
+      document.getElementById('message-section').classList.add('active');
+
+      createHearts();
+    }
+
+    function goToSlide2() {
+      document.getElementById('message-section').classList.remove('active');
+      document.getElementById('message-section').style.display = 'none';
+      
+      const loveSection = document.getElementById('love-section');
+      loveSection.style.display = 'block';
+      setTimeout(() => loveSection.classList.add('active'), 10);
+    }
+
+    function goToSlide1() {
+      document.getElementById('love-section').classList.remove('active');
+      document.getElementById('love-section').style.display = 'none';
+      
+      const messageSection = document.getElementById('message-section');
+      messageSection.style.display = 'block';
+      setTimeout(() => messageSection.classList.add('active'), 10);
+    }
+
+    function createHearts() {
+      const symbols = ['🌸', '✨', '💖', '🎉', '🎁'];
+      for (let i = 0; i < 25; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.classList.add('sparkle');
+        sparkle.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+        sparkle.style.left = Math.random() * 100 + 'vw';
+        sparkle.style.animationDuration = (Math.random() * 2 + 3) + 's';
+        sparkle.style.fontSize = (Math.random() * 10 + 15) + 'px';
+        document.body.appendChild(sparkle);
+      }
+    }
+  </script>
+
+</body>
+</html>
